@@ -1,0 +1,123 @@
+
+<project name="purePDF" default="compile" basedir=".">
+	<property file="build.properties" />
+	<property name="FLEX_HOME" value="${flex_sdk_home}"/>
+	<taskdef resource="flexTasks.tasks" classpath="${flex_sdk_home}/ant/lib/flexTasks.jar" />
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
+
+	<target name="compile-all">
+		<buildnumber file="build.number"/>
+		<propertyset id="tdate"></propertyset>
+		<tstamp>
+			<format property="tdate" pattern="yyyyMMdd"/>
+		</tstamp>
+		<antcall target="clean"></antcall>
+		<antcall target="update-version"><param name="build.number" value="${build.number}"/><param name="tdate" value="${tdate}"/></antcall>
+		<antcall target="compile-fonts"><param name="build.number" value="${build.number}"/><param name="tdate" value="${tdate}"/></antcall>
+		<antcall target="compile"><param name="build.number" value="${build.number}"/><param name="tdate" value="${tdate}"/></antcall>
+		<antcall target="asdoc"></antcall>
+		<antcall target="create-zip"><param name="build.number" value="${build.number}"/><param name="tdate" value="${tdate}"/></antcall>
+	</target>
+	
+	<target name="update-version">
+		<echo>updating version to current datetime: ${tdate}</echo>
+		<replaceregexp byline="true">
+			<regexp pattern="public static const BUILD_DATE: String = \'([0-9]+)'"/>
+			<substitution expression="public static const BUILD_DATE: String = '${tdate}'"/>
+			<fileset dir="src/org/purepdf/pdf">
+    			<include name="PdfWriter.as"/>
+			</fileset>
+		</replaceregexp>
+		
+		<replaceregexp byline="true">
+			<regexp pattern="public static const BUILD_NUMBER: String = \'([0-9\.]+)'"/>
+			<substitution expression="public static const BUILD_NUMBER: String = '${build.number}'"/>
+			<fileset dir="src/org/purepdf/pdf">
+    			<include name="PdfWriter.as"/>
+			</fileset>
+		</replaceregexp>
+	</target>
+	
+	
+	<target name="compile-fonts">
+		<echo>Compiling ${font_output_filename}</echo>
+		<compc 
+			output="${output_dir}/${font_output_filename}" 
+			locale="en_US"
+			include-classes="org.purepdf.resources.BuiltinFonts,org.purepdf.resources.BuiltinCJKFonts,org.purepdf.resources.CMap"
+			fork="true" maxmemory="512m">
+			<source-path path-element="src" />
+		</compc>
+	</target>
+	
+	<target name="compile">
+		<echo>Compiling ${output_filename}</echo>
+		<mkdir dir="_tmp"/>
+		<move file="src/org/purepdf/resources/BuiltinFonts.as" tofile="_tmp/BuiltinFonts.moved"/>
+		<move file="src/org/purepdf/resources/BuiltinCJKFonts.as" tofile="_tmp/BuiltinCJKFonts.moved"/>
+		<move file="src/org/purepdf/resources/CMap.as" tofile="_tmp/CMap.moved"/>
+		<trycatch reference="exception_ref" >
+			<try>
+				<compc
+					output="${output_dir}/${output_filename}"
+					locale="en_US" failonerror="false" fork="true" maxmemory="512m">
+					<source-path path-element="src"></source-path>
+					<include-sources dir="src" includes="*">
+					</include-sources>
+					<optimize>true</optimize>
+					<warnings>false</warnings>
+					<target-player>10.0.0</target-player>
+					<keep-as3-metadata>Abstract</keep-as3-metadata>
+		            <metadata>
+		                <creator>Alessandro Crugnola</creator>
+		                <language>EN</language>
+		            </metadata>
+					<compiler.library-path dir="libs" append="true"><include name="*.swc" /></compiler.library-path>
+					<compiler.library-path dir="${output_dir}" append="true"><include name="${font_output_filename}" /></compiler.library-path>
+					<as3>true</as3>
+				</compc>
+			</try>
+			<catch>
+	            <property name="exception" refid="exception_ref" />
+	            <property name="message" value="Error in trycatch block:${line.separator}${exception}" />
+	            <echo message="${message}" />
+	            <fail message="${message}" />
+			</catch>
+			<finally>		
+				<move file="_tmp/BuiltinFonts.moved" tofile="src/org/purepdf/resources/BuiltinFonts.as"/>
+				<move file="_tmp/BuiltinCJKFonts.moved" tofile="src/org/purepdf/resources/BuiltinCJKFonts.as"/>
+				<move file="_tmp/CMap.moved" tofile="src/org/purepdf/resources/CMap.as"/>
+			</finally>
+		</trycatch>
+	</target>
+
+	<target name="asdoc">
+		<asdoc failonerror="true" fork="true" maxmemory="512m">
+			<compiler.source-path path-element="src" />
+			<doc-sources path-element="src" />
+			<compiler.library-path dir="${output_dir}/${font_output_filename}" />
+			<compiler.library-path dir="libs"><include name="*.swc" /></compiler.library-path>
+		</asdoc>
+		
+		<zip destfile="${output_dir}/asdoc-output.zip" basedir="asdoc-output"></zip>
+		
+	</target>
+	
+	<target name="create-zip">
+		<zip destfile="${output_dir}/purePDF_0.${build.number}.${tdate}.zip" basedir="${output_dir}" includes="**/*.swc" />
+		<zip destfile="${output_dir}/asdoc-output.zip" basedir="asdoc-output" includes="**/*.*" />
+	</target>
+
+	<target name="clean">
+		<delete>
+			<fileset dir="bin">
+				<include name="*.swc" />
+			</fileset>
+		</delete>
+		<delete>
+			<fileset dir="asdoc-output">
+				<include name="*.*" />
+			</fileset>
+		</delete>
+	</target>
+</project>
