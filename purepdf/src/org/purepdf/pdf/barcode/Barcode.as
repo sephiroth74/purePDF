@@ -69,6 +69,7 @@ package org.purepdf.pdf.barcode
 		public static const CODE128_UCC: int = 10;
 		public static const CODE128_RAW: int = 11;
 		public static const CODABAR: int = 12;
+		public static const CODE39: int = 13;
 		
 		protected var _x: Number;    
 		protected var _n: Number;
