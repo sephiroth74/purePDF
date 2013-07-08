@@ -37,6 +37,12 @@
 * you aren't using an obsolete version:
 * https://github.com/sephiroth74/purePDF
 *
+*
+*			CODE39: http://en.wikipedia.org/wiki/Code_39
+*
+*
+*
+*
 */
 package org.purepdf.pdf.barcode
 {
@@ -56,58 +62,6 @@ package org.purepdf.pdf.barcode
 		
 		private static const TEXTPOS_CODE39: Vector.<Number> = Vector.<Number>([6.5, 13.5, 20.5, 27.5, 34.5, 41.5, 53.5, 60.5, 67.5, 74.5, 81.5, 88.5]);
 		
-		
-		private static const ODD: int = 0;
-		private static const EVEN: int = 1;
-		private static const PARITY13: Vector.<Vector.<int>> =
-			Vector.<Vector.<int>>([
-				Vector.<int>([ODD, ODD,  ODD,  ODD,  ODD,  ODD]),  // 0
-				Vector.<int>([ODD, ODD,  EVEN, ODD,  EVEN, EVEN]), // 1
-				Vector.<int>([ODD, ODD,  EVEN, EVEN, ODD,  EVEN]), // 2
-				Vector.<int>([ODD, ODD,  EVEN, EVEN, EVEN, ODD]),  // 3
-				Vector.<int>([ODD, EVEN, ODD,  ODD,  EVEN, EVEN]), // 4
-				Vector.<int>([ODD, EVEN, EVEN, ODD,  ODD,  EVEN]), // 5
-				Vector.<int>([ODD, EVEN, EVEN, EVEN, ODD,  ODD]),  // 6
-				Vector.<int>([ODD, EVEN, ODD,  EVEN, ODD,  EVEN]), // 7
-				Vector.<int>([ODD, EVEN, ODD,  EVEN, EVEN, ODD]),  // 8
-				Vector.<int>([ODD, EVEN, EVEN, ODD,  EVEN, ODD])   // 9
-			]);
-		
-		private static const PARITY2: Vector.<Vector.<int>> =
-			Vector.<Vector.<int>>([
-				Vector.<int>([ODD,  ODD]),   // 0
-				Vector.<int>([ODD,  EVEN]),  // 1
-				Vector.<int>([EVEN, ODD]),   // 2
-				Vector.<int>([EVEN, EVEN])   // 3
-			]);
-		
-		private static const PARITY5: Vector.<Vector.<int>> =
-			Vector.<Vector.<int>>([
-				Vector.<int>([EVEN, EVEN, ODD,  ODD,  ODD]),  // 0
-				Vector.<int>([EVEN, ODD,  EVEN, ODD,  ODD]),  // 1
-				Vector.<int>([EVEN, ODD,  ODD,  EVEN, ODD]),  // 2
-				Vector.<int>([EVEN, ODD,  ODD,  ODD,  EVEN]), // 3
-				Vector.<int>([ODD,  EVEN, EVEN, ODD,  ODD]),  // 4
-				Vector.<int>([ODD,  ODD,  EVEN, EVEN, ODD]),  // 5
-				Vector.<int>([ODD,  ODD,  ODD,  EVEN, EVEN]), // 6
-				Vector.<int>([ODD,  EVEN, ODD,  EVEN, ODD]),  // 7
-				Vector.<int>([ODD,  EVEN, ODD,  ODD,  EVEN]), // 8
-				Vector.<int>([ODD,  ODD,  EVEN, ODD,  EVEN])  // 9
-			]);
-		
-		private static const PARITYE: Vector.<Vector.<int>> =
-			Vector.<Vector.<int>>([
-				Vector.<int>([EVEN, EVEN, EVEN, ODD,  ODD,  ODD]),  // 0
-				Vector.<int>([EVEN, EVEN, ODD,  EVEN, ODD,  ODD]),  // 1
-				Vector.<int>([EVEN, EVEN, ODD,  ODD,  EVEN, ODD]),  // 2
-				Vector.<int>([EVEN, EVEN, ODD,  ODD,  ODD,  EVEN]), // 3
-				Vector.<int>([EVEN, ODD,  EVEN, EVEN, ODD,  ODD]),  // 4
-				Vector.<int>([EVEN, ODD,  ODD,  EVEN, EVEN, ODD]),  // 5
-				Vector.<int>([EVEN, ODD,  ODD,  ODD,  EVEN, EVEN]), // 6
-				Vector.<int>([EVEN, ODD,  EVEN, ODD,  EVEN, ODD]),  // 7
-				Vector.<int>([EVEN, ODD,  EVEN, ODD,  ODD,  EVEN]), // 8
-				Vector.<int>([EVEN, ODD,  ODD,  EVEN, ODD,  EVEN])  // 9
-			]);
 
 		public function BarcodeCODE39()
 		{
