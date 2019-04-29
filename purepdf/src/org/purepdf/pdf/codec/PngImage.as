@@ -242,8 +242,7 @@ package org.purepdf.pdf.codec
 						decodeUpFilter( curr, prior, bytesPerRow );
 						break;
 					case PNG_FILTER_AVERAGE:
-						throw new NonImplementatioError();
-						//decodeAverageFilter( curr, prior, bytesPerRow, bytesPerPixel );
+						decodeAverageFilter( curr, prior, bytesPerRow, bytesPerPixel );
 						break;
 					case PNG_FILTER_PAETH:
 						decodePaethFilter( curr, prior, bytesPerRow, bytesPerPixel );
@@ -907,6 +906,27 @@ package org.purepdf.pdf.codec
 				pos = bytesPerRow * y + x / ( 8 / bitDepth );
 				var v: int = data[ offset ] << ( 8 - bitDepth * ( x % ( 8 / bitDepth ) ) - bitDepth );
 				image[ pos ] |= v;
+			}
+		}
+		
+		private static function decodeAverageFilter( curr: Bytes, prev: Bytes, count: int, bpp: int ): void
+		{
+			var raw: int;
+			var priorRow: int;
+			var i: int;
+			
+			for ( i = 0; i < bpp; i++ )
+			{
+				raw = curr[ i ] & 0xff;
+				priorRow = (prev[ i ] & 0xff) >>> 1;
+				curr[ i ] = ( raw + priorRow );
+			}
+			
+			for ( i = bpp; i < count; i++ )
+			{
+				raw = curr[ i ] & 0xff;
+				priorRow = ((prev[ i ] & 0xff) + (curr[ i - bpp ] & 0xff)) >>> 1;
+				curr[ i ] = ( raw + priorRow );
 			}
 		}
 
